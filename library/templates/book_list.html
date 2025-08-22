@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Books{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Books</h2>
+    <a class="btn btn-primary" href="{% url 'book_create' %}">+ Add Book</a>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for book in books %}
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            {% if book.image %}
+            <img src="{{ book.image.url }}" class="card-img-top" alt="{{ book.title }}" style="height:250px; object-fit:cover;">
+            {% else %}
+            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height:250px;">
+                No Image
+            </div>
+            {% endif %}
+            
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ book.title }}</h5>
+                <p class="card-text mb-1"><strong>Author:</strong> {{ book.author.name }}</p>
+                <p class="card-text mb-1"><strong>Published:</strong> {{ book.published_date }}</p>
+                <p class="card-text mb-2"><strong>Price:</strong> ₹{{ book.price }}</p>
+
+                <form method="post" action="{% url 'like_book' book.id %}" class="mb-2">
+                    {% csrf_token %}
+                    {% if user in book.likes.all %}
+                    <button class="btn btn-sm btn-danger w-100">❤️ Unlike</button>
+                    {% else %}
+                    <button class="btn btn-sm btn-outline-primary w-100">👍 Like</button>
+                    {% endif %}
+                </form>
+                <small class="text-muted mb-2">{{ book.total_likes }} Likes</small>
+
+                <div class="mt-auto d-flex justify-content-between">
+                    <a class="btn btn-sm btn-warning" href="{% url 'book_update' book.pk %}">Edit</a>
+                    <a class="btn btn-sm btn-danger" href="{% url 'book_delete' book.pk %}" onclick="return confirm('Delete this book?')">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col">
+        <div class="alert alert-secondary text-center">No books yet.</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

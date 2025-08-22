@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Authors{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="mb-0">Authors</h2>
+  <a class="btn btn-primary" href="{% url 'author_create' %}">+ Add Author</a>
+</div>
+
+<table class="table table-striped table-hover bg-white">
+  <thead>
+    <tr><th>Name</th><th>Bio</th><th class="text-end">Actions</th></tr>
+  </thead>
+  <tbody>
+  {% for author in authors %}
+    <tr>
+      <td>{{ author.name }}</td>
+      <td class="w-50">{{ author.bio|default:"—" }}</td>
+      <td class="text-end">
+        <a class="btn btn-sm btn-warning" href="{% url 'author_update' author.pk %}">Edit</a>
+        <a class="btn btn-sm btn-danger" href="{% url 'author_delete' author.pk %}" onclick="return confirm('Delete this author?')">Delete</a>
+      </td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="3" class="text-center text-muted">No authors yet.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
