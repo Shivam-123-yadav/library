@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        {% if book.image %}
+        <img src="{{ book.image.url }}" class="card-img-top" alt="{{ book.title }}" style="height:400px; object-fit:contain;">
+        {% endif %}
+        <div class="card-body">
+            <h3 class="card-title">{{ book.title }}</h3>
+            <p><strong>Author:</strong> {{ book.author.name }}</p>
+            <p><strong>Published:</strong> {{ book.published_date }}</p>
+            <p><strong>Price:</strong> ₹{{ book.price }}</p>
+            <p><strong>Description:</strong> {{ book.description|default:"No description available." }}</p>
+            
+            <a href="{% url 'home' %}" class="btn btn-secondary">⬅ Back to Books</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

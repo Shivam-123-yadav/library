@@ -14,6 +14,15 @@ import os
 from pathlib import Path
 
 
+from dotenv import load_dotenv
+load_dotenv()
+
+# Twilio
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TWILIO_WHATSAPP_FROM = os.getenv("TWILIO_WHATSAPP_FROM")
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -53,6 +62,16 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/book_list/'   # login ke baad kidhar bhejna hai
 LOGOUT_REDIRECT_URL = '/login/'      # logout ke baad kidhar bhejna hai
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+# settings.py
+ORDER_NOTIFICATION_EMAIL = os.getenv("ORDER_NOTIFICATION_EMAIL")
+
+
 
 
 MIDDLEWARE = [
@@ -78,6 +97,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',  
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.media',
+                'library.views.recent_books_and_authors',  # 👈 yeh line add karo
             ], 
         },
     },
@@ -92,11 +112,11 @@ WSGI_APPLICATION = 'mypro.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'demo1_db',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '3306',
+       "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
 }
 

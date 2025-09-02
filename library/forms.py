@@ -1,6 +1,13 @@
 from django import forms
 from .models import Author, Book
 
+from .models import ContactMessage
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = ContactMessage
+        fields = ['name', 'email', 'message']
+
 class AuthorForm(forms.ModelForm):
     class Meta:
         model = Author
@@ -9,7 +16,7 @@ class AuthorForm(forms.ModelForm):
 class BookForm(forms.ModelForm):
     class Meta:
         model = Book
-        fields = ['title', 'author', 'published_date', 'price', 'image']
+        fields = ['title', 'author','description','published_date', 'price', 'image']
         widgets = {
             'published_date': forms.DateInput(attrs={'type': 'date'})
         }
@@ -45,3 +52,38 @@ class SignupForm(forms.ModelForm):
 class LoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+
+from django import forms
+from .models import Order
+
+# class OrderForm(forms.ModelForm):
+#     class Meta:
+#         model = Order
+#         fields = ["name", "email", "phone", "address", "quantity"]
+
+
+# library/forms.py
+
+class BuyNowForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ["name", "email", "phone", "address", "quantity", "notes"]
+        widgets = {
+            "address": forms.Textarea(attrs={"rows": 3}),
+            "notes": forms.Textarea(attrs={"rows": 3}),
+        }
+
+# forms.py
+from django import forms
+from django.contrib.auth.models import User
+from .models import Profile
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['full_name', 'mobile', 'bio', 'avatar']
