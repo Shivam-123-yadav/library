@@ -1,15 +1,12 @@
-# Python
-__pycache__/
-*.pyc
+# Create .gitignore
+New-Item -ItemType File -Name ".gitignore"
 
-# Django
+# Add content (Windows PowerShell)
+Add-Content .gitignore "__pycache__/
+*.pyc
 *.sqlite3
 media/
 .env
-
-# IDE / Editor
 .vscode/
 .idea/
-
-# Virtual environment
-venv/
+venv/"
