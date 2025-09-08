@@ -89,12 +89,26 @@
         height: auto; /* Maintain aspect ratio */
         object-fit: contain; /* Ensure full coverage */
     }
+
+
+
+ 
+
+/* Hover effect */
+.dd {position:relative;
+     transition: 1s all;
+}
+.dd:hover {
+  transform: translateY(-8px) scale(1.02);
+  {% comment %} box-shadow: 0px 0px 10px 3px rgb(21 108 236 / 34%); {% endcomment %}
+}
+
 </style>
 
 <div class="d-flex justify-content-between align-items-center mb-4" id="books-section">
     <h2>📚 Books Store</h2>
     {% if user.is_superuser %}
-    <a class="btn btn-buy px-4 py-2 rounded-pill" href="{% url 'book_create' %}">+ Add Book</a>
+    <a class="btn btn-buy px-4 py-2 rounded-pill dd" href="{% url 'book_create' %}">+ Add Book</a>
     {% endif %}
 </div>
 
@@ -120,20 +134,21 @@
     </select>
   </div>
   <div class="col-md-4">
-    <button class="btn btn-dark w-100">Apply</button>
+    <button class="btn btn-dark w-100 dd">Apply</button>
   </div>
 </form>
 
-<!-- 🔍 Search Bar -->
+{% comment %} <!-- 🔍 Search Bar -->
 <div class="input-group mb-5" style="max-width: 450px;">
   <input type="text" id="searchInput" class="form-control" placeholder="Search books...">
   <button class="btn btn-outline-secondary">🔍</button>
-</div>
+</div> {% endcomment %}
 
 <!-- Books List -->
-<div id="booksContainer" class="row row-cols-2 row-cols-md-4 g-4 w-100 mx-0">
+
+<div id="booksContainer" class="row row-cols-2 row-cols-md-4 g-4 w-100 mx-0 ">
     {% for book in books %}
-    <div class="col" >
+    <div class="col dd" >
         <div class="card book-card h-100">
             {% if book.image %}
             <a href="#" data-bs-toggle="modal" data-bs-target="#imgModal{{ book.id }}">
@@ -172,6 +187,7 @@
             </div>
         </div>
     </div>
+    
 
     <!-- Modal -->
     {% if book.image %}
@@ -202,7 +218,7 @@
 
 <!-- JS for Live API Search -->
 <script>
-const searchInput = document.getElementById("searchInput");
+{% comment %} const searchInput = document.getElementById("searchInput");
 const booksContainer = document.getElementById("booksContainer");
 
 let debounceTimer;
@@ -234,7 +250,7 @@ searchInput.addEventListener("input", function() {
             }
         });
     }, 300);
-});
+}); {% endcomment %}
 </script>
 
 {% endblock %}

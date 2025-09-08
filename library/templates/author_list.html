@@ -23,7 +23,12 @@
   <tbody>
   {% for author in authors %}
     <tr>
-      <td>{{ author.name }}</td>
+      <!-- Author name is now clickable -->
+      <td>
+        <a href="{% url 'books_by_author' author.pk %}#books-section " class="text-decoration-none">
+          {{ author.name }}
+        </a>
+      </td>
       <td class="w-50">{{ author.bio|default:"—" }}</td>
       {% if user.is_superuser %}
       <td class="text-end">

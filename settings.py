@@ -16,34 +16,25 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 load_dotenv()
+from django.conf import settings
+print(settings.SETTINGS_MODULE)
 
 
-import os
-from pathlib import Path
+# # Twilio
+# TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+# TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+# TWILIO_WHATSAPP_FROM = os.getenv("TWILIO_WHATSAPP_FROM")
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
-SITE_URL = "https://0d3695324d80.ngrok-free.app"  # apna current ngrok URL
 
 # =========================
 # WhatsApp Cloud API Config
 # =========================
+WHATSAPP_TOKEN = "EAAanMIPpyvQBPY85d3RWrZBOUTmjtPjioQZCtU7kRmPDPZAYE6iyleNqgRs7Xz0hx3OyvDqihSgokMepfZAOjIk6DCfypY9CKTZCfwblq5awLjj1p2s5MbBzYj1JHTm43OCsENNbL7yjYRUNxD9ISfHQVPLuPHxptjeuWO3FbAMNvzZAvSXCZByaDDGpsYZArozKZAKRWZA8y2c8saCfbzDqYD9ZCR5xHBGLPbrQ9ZA4YXx1GPkZD"
 
-# # Twilio
-TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-TWILIO_WHATSAPP_FROM = os.getenv("TWILIO_WHATSAPP_FROM")
+WHATSAPP_PHONE_NUMBER_ID = "701101489762614"  # tumhara test phone number id
+GRAPH_API_VERSION = "v22.0"
 
-# WHATSAPP_TOKEN = "EAAanMIPpyvQBPcuq6z17f9EgyfgbQctPqc5UU2RonDLZAeQbcsN3mrOKqGbE58kAmvfEvg2smfsxiF9oHt0riGCkIq62xi5ipsiuloiVeZCZCFZAVkOroW6XuxhmchySsjIu3ZAYS6HTsycDmxahzRZAZCaXw0BUrZBMFGq9c4q9OcTd4o6Dzg4ZBC5Ya72LHb1hYXgwFy6rPNM7EhLfRMvnrZAumx77RNJYzVWAYdbPibIPkZD"
-
-# WHATSAPP_PHONE_NUMBER_ID = "701101489762614"  # tumhara test phone number id
-# GRAPH_API_VERSION = "v22.0"
-
-# WHATSAPP_API_URL = f"https://graph.facebook.com/{GRAPH_API_VERSION}/{WHATSAPP_PHONE_NUMBER_ID}/messages"
-
+WHATSAPP_API_URL = f"https://graph.facebook.com/{GRAPH_API_VERSION}/{WHATSAPP_PHONE_NUMBER_ID}/messages"
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -59,17 +50,7 @@ SECRET_KEY = 'django-insecure-&$32zp$z8sbj#t%cxopoiunbztirx97xw@j-13)xdipxi8tz%d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    ".ngrok-free.app",
-]
-
-SITE_URL = "https://0d3695324d80.ngrok-free.app"
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
-
+ALLOWED_HOSTS = ['*']  # temporary for deployment
 
 
 # Application definition
@@ -143,15 +124,14 @@ WSGI_APPLICATION = 'mypro.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-       "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT"),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),       # Database name from Render
+        'USER': os.getenv('DB_USER'),       # Username from Render
+        'PASSWORD': os.getenv('DB_PASSWORD'), # Password from Render
+        'HOST': os.getenv('DB_HOST'),       # Hostname from Render
+        'PORT': os.getenv('DB_PORT', '5432'), # Port from Render
     }
 }
-
 
 
 # Password validation
@@ -187,11 +167,20 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
-SITE_URL = "https://0d3695324d80.ngrok-free.app"
-STATIC_URL = 'static/'
+
+import os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Static files settings (already discussed)
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# ✅ Media files settings
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

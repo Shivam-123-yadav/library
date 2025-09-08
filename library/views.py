@@ -103,7 +103,8 @@ def book_list(request):
 @login_required
 def book_detail(request, pk):
     book = get_object_or_404(Book, pk=pk)
-    return render(request, "book_detail.html", {"book": book})
+    return render(request, "library/book_detail.html", {"book": book})
+
 
 @login_required
 @user_passes_test(admin_required)
@@ -372,64 +373,7 @@ def _make_order_pdf(order):
     return pdf
 
 # ---------- Buy Now ----------
-def buy_now(request, pk):
-    book = get_object_or_404(Book, pk=pk)
 
-    if request.method == "POST":
-        form = BuyNowForm(request.POST)
-        if form.is_valid():
-            order = form.save(commit=False)
-            order.book = book
-            order.save()
-
-            # PDF bytes
-            pdf_bytes = _make_order_pdf(order)
-            filename = f"order_{order.id}.pdf"
-
-            # --- Admin email ---
-            subject_admin = f"New Book Order: {book.title} (#{order.id})"
-            body_admin = (
-                f"New order received.\n\n"
-                f"Order ID: {order.id}\n"
-                f"Book: {book.title}\n"
-                f"Buyer: {order.name}\n"
-                f"Email: {order.email}\n"
-                f"Phone: {order.phone}\n"
-                f"Qty: {order.quantity}\n"
-            )
-            email_admin = EmailMessage(
-                subject_admin,
-                body_admin,
-                settings.DEFAULT_FROM_EMAIL,
-                [settings.ORDER_NOTIFICATION_EMAIL],
-            )
-            email_admin.attach(filename, pdf_bytes, "application/pdf")
-            email_admin.send(fail_silently=False)
-
-            # --- User email ---
-            subject_user = "Your Book Order Confirmation"
-            body_user = (
-                f"Hi {order.name},\n\n"
-                f"Thanks for your order of '{book.title}'. "
-                "We've attached your order summary as PDF.\n\n"
-                "We'll contact you soon with shipping details.\n\n"
-                "Regards,\nLibrary Team"
-            )
-            email_user = EmailMessage(
-                subject_user,
-                body_user,
-                settings.DEFAULT_FROM_EMAIL,
-                [order.email],
-            )
-            email_user.attach(filename, pdf_bytes, "application/pdf")
-            email_user.send(fail_silently=True)
-
-            messages.success(request, "Order placed! Confirmation email sent.")
-            return redirect("book_list")
-    else:
-        form = BuyNowForm()
-
-    return render(request, "buy_now.html", {"form": form, "book": book})
 
 def order_pdf_view(request, order_id):
     order = get_object_or_404(Order, id=order_id)
@@ -490,22 +434,50 @@ def buy_now(request, pk):
             order.book = book
             order.save()
 
-            # Generate PDF
+            # PDF bytes
             pdf_bytes = _make_order_pdf(order)
             filename = f"order_{order.id}.pdf"
 
-            # --- Send Email ---
-            email_user = EmailMessage(
-                subject=f"Order Confirmation #{order.id}",
-                body=f"Hi {order.name}, your order is confirmed. PDF attached.",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[order.email]
+            # --- Admin email ---
+            subject_admin = f"New Book Order: {book.title} (#{order.id})"
+            body_admin = (
+                f"New order received.\n\n"
+                f"Order ID: {order.id}\n"
+                f"Book: {book.title}\n"
+                f"Buyer: {order.name}\n"
+                f"Email: {order.email}\n"
+                f"Phone: {order.phone}\n"
+                f"Qty: {order.quantity}\n"
             )
-            email_user.attach(filename, pdf_bytes, 'application/pdf')
+            email_admin = EmailMessage(
+                subject_admin,
+                body_admin,
+                settings.DEFAULT_FROM_EMAIL,
+                [settings.ORDER_NOTIFICATION_EMAIL],
+            )
+            email_admin.attach(filename, pdf_bytes, "application/pdf")
+            email_admin.send(fail_silently=False)
+
+            # --- User email ---
+            subject_user = "Your Book Order Confirmation"
+            body_user = (
+                f"Hi {order.name},\n\n"
+                f"Thanks for your order of '{book.title}'. "
+                "We've attached your order summary as PDF.\n\n"
+                "We'll contact you soon with shipping details.\n\n"
+                "Regards,\nLibrary Team"
+            )
+            email_user = EmailMessage(
+                subject_user,
+                body_user,
+                settings.DEFAULT_FROM_EMAIL,
+                [order.email],
+            )
+            email_user.attach(filename, pdf_bytes, "application/pdf")
             email_user.send(fail_silently=True)
 
-            # --- Send WhatsApp ---
-            send_whatsapp(order, pdf_bytes)
+            pdf_url = generate_and_save_pdf(order)   # return karega ngrok URL
+            send_whatsapp(order, pdf_url)
 
             messages.success(request, "Order placed! Email & WhatsApp notification sent.")
             return redirect("book_list")
@@ -513,6 +485,7 @@ def buy_now(request, pk):
         form = BuyNowForm()
 
     return render(request, "buy_now.html", {"form": form, "book": book})
+
 
 # library/views.py
 from django.http import JsonResponse
@@ -656,3 +629,56 @@ def api_books_by_genre(request):
 # Agar genre ForeignKey hai:
 # data = Book.objects.values("genre__name").annotate(count=Count("id")).order_by("-count")
 # labels = [d["genre__name"] for d in data]
+# views.py
+from django.shortcuts import render, get_object_or_404
+from .models import Author, Book
+
+def books_by_author(request, author_id):
+    author = get_object_or_404(Author, pk=author_id)
+    books = Book.objects.filter(author=author)
+
+    return render(request, "books_by_author.html", {
+        "author": author,
+        "books": books,
+    })
+
+
+
+import os
+from io import BytesIO
+from reportlab.pdfgen import canvas
+from django.conf import settings
+
+def generate_and_save_pdf(order):
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer)
+    p.drawString(100, 750, f"Order ID: {order.id}")
+    p.drawString(100, 730, f"Book: {order.book.title}")
+    p.drawString(100, 710, f"Customer: {order.name}")
+    p.drawString(100, 690, f"Phone: {order.phone}")
+    p.drawString(100, 670, f"Address: {order.address}")
+    p.drawString(100, 650, "Thanks for your purchase!")
+    p.showPage()
+    p.save()
+    pdf_bytes = buffer.getvalue()
+    buffer.close()
+
+    folder = os.path.join(settings.MEDIA_ROOT, "whatsapp_orders")
+    os.makedirs(folder, exist_ok=True)
+    file_path = os.path.join(folder, f"order_{order.id}.pdf")
+
+    with open(file_path, "wb") as f:
+        f.write(pdf_bytes)
+
+    # ✅ Public URL return
+    pdf_url = f"{settings.SITE_URL}{settings.MEDIA_URL}whatsapp_orders/order_{order.id}.pdf"
+    return pdf_url
+
+
+# def test_pdf(request):
+#     pdf_url = generate_and_save_pdf(order_id=53)
+#     return FileResponse(open(settings.MEDIA_ROOT / "whatsapp_orders" / "order_53.pdf", "rb"),
+#                         as_attachment=True,
+#                         filename="order_53.pdf")
+
+

@@ -5,7 +5,6 @@ New-Item -ItemType File -Name ".gitignore"
 Add-Content .gitignore "__pycache__/
 *.pyc
 *.sqlite3
-media/
 .env
 .vscode/
 .idea/

@@ -106,7 +106,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     color: #fff;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
+    {% comment %} text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7); {% endcomment %}
 }
 
 .hero .carousel-caption h5 {
@@ -218,6 +218,44 @@
         background: #000 !important;
         color: #ff0 !important;
     }
+
+
+@keyframes pulse {
+   0% {
+     transform: scale(1);
+   }
+   50% {
+     transform: scale(1.05);
+   }
+   100% {
+     transform: scale(1);
+   }
+ }
+ @keyframes swing {
+   0% {
+     transform: rotate(0deg);
+   }
+   25% {
+     transform: rotate(10deg);
+   }
+   50% {
+     transform: rotate(-10deg);
+   }
+   75% {
+     transform: rotate(5deg);
+   }
+   100% {
+     transform: rotate(0deg);
+   }
+ }
+ .pulse {
+   animation: pulse 1s infinite ease-in-out;
+ }
+ .swing {
+   animation: swing 1s infinite ease-in-out;
+   transform-origin: top center;
+ }
+
     </style>
 
 </head>
@@ -231,59 +269,74 @@
     </div>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="/media/logo/logo.png" alt="Logo" width="60" height="60" class="me-2">
-                Library WebApp
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                {% comment %} <!-- Search Bar -->
-               <form class="d-flex me-3" method="get" action="{% url 'book_list' %}">
-            <input class="form-control me-2" type="search" name="q" placeholder="Search books/authors" aria-label="Search" value="{{ request.GET.q }}">
-            <button class="btn btn-outline-warning" type="submit"><i class="fas fa-search"></i></button>
-        </form> {% endcomment %}
-                <ul class="navbar-nav ms-auto">
-                     <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#home-section">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'book_list' %}#books-section">Books</a></li>
-                   <li class="nav-item"><a class="nav-link" href="{% url 'author_list' %}#authors-section">Authors</a></li>
-                     <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}#dashboard-section">Dashboard</a></li>
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="/media/logo/logo.png" alt="Logo" width="60" height="60" class="me-2">
+            Library WebApp
+        </a>
 
-
-                    {% if user.is_authenticated %}
-<li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle navbar-profile" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown">
-        <i class="fas fa-user-circle"></i> {{ user.username }}
-    </a>
-    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-        <li><a class="dropdown-item" href="{% url 'profile' %}#profile-section">Profile</a></li>
-        <li><a class="dropdown-item" href="{% url 'settings' %}#Setting-section">Settings</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
-    </ul>
-</li>
-{% else %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">Signup</a></li>
-                    {% endif %}
-                </ul>
-                <!-- Dark/Light Mode Toggle -->
-                <button id="themeToggle" class="btn btn-outline-light ms-3" title="Toggle dark/light mode">
-                    <i class="fas fa-moon"></i>
-                </button>
+        <!-- 🔍 Search Bar (collapse ke bahar rakha) -->
+        <form class="d-flex ms-3" style="max-width: 350px;">
+            <div class="input-group">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search books...">
+                <button class="btn btn-outline-secondary" type="button">🔍</button>
             </div>
+        </form>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#home-section">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'book_list' %}#books-section">Books</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'author_list' %}#authors-section">Authors</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}#dashboard-section">Dashboard</a></li>
+
+                <!-- Contact Modal -->
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#contactModal">Contact</a>
+                </li>
+
+                {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle navbar-profile" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle"></i> {{ user.username }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li><a class="dropdown-item" href="{% url 'profile' %}#profile-section">Profile</a></li>
+                        <li><a class="dropdown-item" href="{% url 'settings' %}#Setting-section">Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                    </ul>
+                </li>
+                {% else %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">Signup</a></li>
+                {% endif %}
+            </ul>
+
+            <!-- Dark/Light Mode Toggle -->
+            <button id="themeToggle" class="btn btn-outline-light ms-3" title="Toggle dark/light mode">
+                <i class="fas fa-moon"></i>
+            </button>
         </div>
-    </nav>
+    </div>
+</nav>
+
+
+<!-- Margin so content is not hidden behind navbar -->
+<div style="margin-top: 80px;"></div>
+
 
     <!-- Hero Section with Carousel -->
     <section class="hero">
         <div id="heroCarousel" class="carousel slide w-100 h-100" data-bs-ride="carousel">
             <div id="carouselExample" class="carousel slide carousel-fade h-100" data-bs-ride="carousel">
     <!-- Carousel Indicators (Dots) -->
-    <div class="carousel-indicators">
+    <div class="carousel-indicators ">
         <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
         <button type="button" data-bs-target="#carouselExample" data-bs-slide-to="1" aria-label="Slide 2"></button>
     </div>
@@ -295,7 +348,7 @@
             <div class="carousel-caption">
                 <h5>Welcome to Library</h5>
                 <p>Discover, Read, and Explore Knowledge</p>
-                <a href="{% url 'book_list' %}" class="btn btn-warning btn-lg explore-btn">Explore Books</a>
+                <a href="{% url 'book_list' %}" class="btn btn-warning btn-lg explore-btn pulse">Explore Books</a>
             </div>
         </div>
         <div class="carousel-item h-100" data-bs-interval="5000">
@@ -303,7 +356,7 @@
             <div class="carousel-caption">
                 <h5>Latest Arrivals</h5>
                 <p>Check out the newest books in our collection!</p>
-                <a href="{% url 'book_list' %}" class="btn btn-warning btn-lg explore-btn">See New Books</a>
+                <a href="{% url 'book_list' %}" class="btn btn-warning btn-lg explore-btn pulse">See New Books</a>
             </div>
         </div>
     </div>
@@ -319,41 +372,58 @@
     </section>
 
     <!-- Django Messages -->
-    <div class="container mt-3">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    </div>
+    {% if messages %}
+<div id="django-messages" class="container mt-3">
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} fade show" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+// 🕒 5 second baad message hatao
+setTimeout(function() {
+    const messagesDiv = document.getElementById("django-messages");
+    if (messagesDiv) {
+        messagesDiv.style.transition = "opacity 0.5s ease";
+        messagesDiv.style.opacity = "0";
+        setTimeout(() => messagesDiv.remove(), 500); // DOM se hatao
+    }
+}, 5000);
+</script>
+{% endif %}
 
     <!-- Main Content -->
-    <main class="container my-10">
+    <main class="container-fluid my-10">
         <!-- Animated Counters -->
 <div class="row text-center mb-5">
   <div class="col-md-4">
-    <h2 id="booksCounter" class="counter" data-target="0">0</h2>
-    <p>Total Books</p>
-  </div>
-  <div class="col-md-4">
-    <h2 id="authorsCounter" class="counter" data-target="0">0</h2>
-    <p>Total Authors</p>
-  </div>
-  <div class="col-md-4">
-    <h2 id="usersCounter" class="counter" data-target="0">0</h2>
-    <p>Active Users</p>
-  </div>
+  <i class="fas fa-book fa-2x text-warning mb-2"></i>
+  <h2 id="booksCounter" class="counter" data-target="0">0</h2>
+  <p>Total Books</p>
+</div>
+
+<div class="col-md-4">
+  <i class="fas fa-user-edit fa-2x text-warning mb-2"></i>
+  <h2 id="authorsCounter" class="counter" data-target="0">0</h2>
+  <p>Total Authors</p>
+</div>
+
+<div class="col-md-4">
+  <i class="fas fa-users fa-2x text-warning mb-2"></i>
+  <h2 id="usersCounter" class="counter" data-target="0">0</h2>
+  <p>Active Users</p>
+</div>
+
 </div>
 
 
 
 
         <!-- Recent Books/Authors Section -->
-        <div class="row recent-section mb-5">
-            <div class="col-md-6">
+        <div class="row recent-section mb-5 ">
+            <div class="col-md-6 ">
                 <h4>Recent Books</h4>
                 <ul class="list-group">
                     {% if recent_books %}
@@ -382,30 +452,58 @@
             </div>
         </div>
         <!-- Testimonials/Reviews -->
-        <div class="row mb-5">
-            <div class="col">
-                <h4>What Our Users Say</h4>
-                <div class="d-flex flex-wrap justify-content-center">
-                    {% for t in testimonials %}
-                        <div class="testimonial-card mx-2">
-                            <p>"{{ t.content }}"</p>
-                            <h6>- {{ t.user_name }}</h6>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
+<div class="row mb-5">
+  <div class="col">
+    <h4 class="text-center mb-4">What Our Users Say</h4>
+
+    <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+      
+      <!-- Carousel Inner -->
+      <div class="carousel-inner text-center">
+        {% for t in testimonials %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+          <div class="testimonial-card mx-auto p-4 shadow rounded" style="max-width: 600px; min-height: 150px;">
+            <p class="mb-2">"{{ t.content }}"</p>
+            <h6 class="fw-bold">- {{ t.user_name }}</h6>
+          </div>
         </div>
-        <form class="newsletter-form d-flex flex-column flex-md-row align-items-center"
+        {% endfor %}
+      </div>
+
+      <!-- Carousel Indicators -->
+      <div class="carousel-indicators">
+        {% for t in testimonials %}
+          <button type="button" data-bs-target="#testimonialCarousel" data-bs-slide-to="{{ forloop.counter0 }}"
+            class="{% if forloop.first %}active{% endif %}" aria-label="Slide {{ forloop.counter }}"></button>
+        {% endfor %}
+      </div>
+
+      <!-- Prev / Next buttons -->
+      <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon bg-dark rounded-circle p-3"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon bg-dark rounded-circle p-3"></span>
+      </button>
+
+    </div>
+  </div>
+</div>
+
+<!-- Newsletter -->
+<form class="newsletter-form d-flex flex-column flex-md-row align-items-center"
       method="post" action="{% url 'subscribe_newsletter' %}">
-    {% csrf_token %}
-    <label class="me-3 mb-2 mb-md-0 fw-bold">Subscribe to our Newsletter:</label>
-    <input type="email" name="newsletter_email" class="form-control me-2 mb-2 mb-md-0"
-           placeholder="Enter your email" required>
-    <button class="btn btn-warning" type="submit">Subscribe</button>
+  {% csrf_token %}
+  <label class="me-3 mb-2 mb-md-0 fw-bold">Subscribe to our Newsletter:</label>
+  <input type="email" name="newsletter_email" class="form-control me-2 mb-2 mb-md-0 "
+         placeholder="Enter your email" required>
+  <button class="btn btn-warning pulse" type="submit">Subscribe</button>
 </form>
 
-        {% block content %}{% endblock %}
-    </main>
+{% block content %}{% endblock %}
+</main>
+
+{% comment %} <!-- Messages -->
 {% if messages %}
   <div class="container mt-3">
     {% for message in messages %}
@@ -414,11 +512,65 @@
       </div>
     {% endfor %}
   </div>
-{% endif %}
+{% endif %} {% endcomment %}
+
+
+<!-- FAQ Section -->
+<div class="row my-5">
+  <div class="col-md-8 mx-auto">
+    <h4 class="text-center mb-4">❓ Frequently Asked Questions</h4>
+
+    <div class="accordion shadow-lg rounded" id="faqAccordion">
+
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+          <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" 
+                  data-bs-target="#collapseOne" aria-expanded="true">
+            <i class="fas fa-user-plus me-2 text-warning"></i> How can I create an account?
+          </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            You can create an account by clicking on the <b>"Sign Up"</b> button at the top right corner and filling in your details.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingTwo">
+          <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" 
+                  data-bs-target="#collapseTwo">
+            <i class="fas fa-key me-2 text-warning"></i> How do I reset my password?
+          </button>
+        </h2>
+        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            Click on <b>"Forgot Password"</b> on the login page and follow the instructions to reset your password securely.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingThree">
+          <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" 
+                  data-bs-target="#collapseThree">
+            <i class="fas fa-envelope-open-text me-2 text-warning"></i> Can I subscribe to the newsletter?
+          </button>
+        </h2>
+        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            Absolutely  Just enter your email in the newsletter section above and you’ll start receiving our updates.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <!-- Contact Us Modal -->
-<div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+<div class="modal fade " id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+  <div class="modal-dialog ">
     <form id="contactForm" class="modal-content" method="post" action="{% url 'contact_submit' %}">
       {% csrf_token %}
       <div class="modal-header">
@@ -440,120 +592,231 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-warning">Send</button>
+        <button type="submit" class="btn btn-warning pulse">Send</button>
       </div>
     </form>
   </div>
 </div>
 
-    <!-- Floating Contact Button -->
-    <button id="contactBtn" type="button" class="btn btn-warning rounded-circle" data-bs-toggle="modal" data-bs-target="#contactModal" title="Contact Us">
-        <i class="fas fa-envelope"></i>
-    </button>
+<!-- Floating Contact Button -->
+<button id="contactBtn" type="button" class="btn btn-warning rounded-circle pulse" 
+        data-bs-toggle="modal" data-bs-target="#contactModal" title="Contact Us">
+    <i class="fas fa-envelope"></i>
+</button>
 
-    <!-- Footer -->
-    <footer class="text-center">
-        <div class="container">
-            <p>&copy; 2025 Library WebApp | All Rights Reserved</p>
-            <!-- Footer Links -->
-  <footer class="text-center py-4">
-    <div>
-      <a href="#" class="text-warning fw-bold" data-bs-toggle="modal" data-bs-target="#privacyModal">Privacy Policy</a> | 
-      <a href="#" class="text-warning fw-bold" data-bs-toggle="modal" data-bs-target="#termsModal">Terms & Conditions</a>
-    </div>
-  </footer>
+<!-- Footer -->
+<footer class="text-center">
+  <div class="container">
+    <p>&copy; 2025 Library WebApp | All Rights Reserved</p>
 
-  <!-- Privacy Policy Modal -->
-  <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header bg-warning">
-          <h5 class="modal-title text-dark" id="privacyModalLabel">Privacy Policy</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body text-dark">
-          <p>
-            We respect your privacy. This Privacy Policy explains how we collect, use, 
-            and protect your personal information when you use our website.
-          </p>
-          <h6>Information We Collect</h6>
-          <ul>
-            <li>Name, Email address, Phone number</li>
-            <li>Usage data (cookies, analytics, etc.)</li>
-          </ul>
-
-          <h6>How We Use Information</h6>
-          <p>
-            We use the collected data to provide better services, send important updates,
-            and improve our website.
-          </p>
-
-          <h6>Data Security</h6>
-          <p>
-            We implement strict measures to protect your data and prevent unauthorized access.
-          </p>
-
-          <h6>Contact Us</h6>
-          <p>If you have any questions, email us at <a href="mailto:support@example.com">support@example.com</a></p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
+    <!-- Footer Links -->
+    <footer class="text-center py-4">
+      <div>
+        <a href="#" class="text-warning fw-bold " data-bs-toggle="modal" data-bs-target="#privacyModal">Privacy Policy</a> | 
+        <a href="#" class="text-warning fw-bold" data-bs-toggle="modal" data-bs-target="#termsModal">Terms & Conditions</a>
       </div>
-    </div>
-  </div>
-
-  <!-- Terms & Conditions Modal -->
-  <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header bg-warning">
-          <h5 class="modal-title text-dark" id="termsModalLabel">Terms & Conditions</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body text-dark">
-          <p>
-            By using our website, you agree to comply with the following terms and conditions.
-          </p>
-
-          <h6>Use of Service</h6>
-          <p>
-            You must use our services legally and not for any unauthorized or harmful purpose.
-          </p>
-
-          <h6>Account Responsibility</h6>
-          <p>
-            You are responsible for maintaining the confidentiality of your login information.
-          </p>
-
-          <h6>Limitation of Liability</h6>
-          <p>
-            We are not liable for any damages resulting from the use of our services.
-          </p>
-
-          <h6>Changes to Terms</h6>
-          <p>
-            We may update these terms at any time. Continued use of our website means you accept the changes.
-          </p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-            <div class="mt-2">
-                <a href="#"><i class="fab fa-facebook fa-lg me-2"></i></a>
-                <a href="#"><i class="fab fa-twitter fa-lg me-2"></i></a>
-                <a href="#"><i class="fab fa-linkedin fa-lg"></i></a>
-            </div>
-        </div>
     </footer>
 
-    <!-- Scroll-to-top button -->
-    <button id="scrollTopBtn" class="btn btn-warning rounded-circle">
-        <i class="fas fa-arrow-up"></i>
-    </button>
+    <!-- Privacy Policy Modal -->
+    <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-warning">
+            <h5 class="modal-title text-dark " id="privacyModalLabel">Privacy Policy</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body text-dark">
+            <p>
+              We respect your privacy. This Privacy Policy explains how we collect, use, 
+              and protect your personal information when you use our website.
+            </p>
+            <h6>Information We Collect</h6>
+            <ul>
+              <li>Name, Email address, Phone number</li>
+              <li>Usage data (cookies, analytics, etc.)</li>
+            </ul>
+
+            <h6>How We Use Information</h6>
+            <p>
+              We use the collected data to provide better services, send important updates,
+              and improve our website.
+            </p>
+
+            <h6>Data Security</h6>
+            <p>
+              We implement strict measures to protect your data and prevent unauthorized access.
+            </p>
+
+            <h6>Contact Us</h6>
+            <p>If you have any questions, email us at <a href="mailto:support@example.com">support@example.com</a></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary pulse" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Terms & Conditions Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-warning">
+            <h5 class="modal-title text-dark" id="termsModalLabel">Terms & Conditions</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body text-dark">
+            <p>
+              By using our website, you agree to comply with the following terms and conditions.
+            </p>
+
+            <h6>Use of Service</h6>
+            <p>
+              You must use our services legally and not for any unauthorized or harmful purpose.
+            </p>
+
+            <h6>Account Responsibility</h6>
+            <p>
+              You are responsible for maintaining the confidentiality of your login information.
+            </p>
+
+            <h6>Limitation of Liability</h6>
+            <p>
+              We are not liable for any damages resulting from the use of our services.
+            </p>
+
+            <h6>Changes to Terms</h6>
+            <p>
+              We may update these terms at any time. Continued use of our website means you accept the changes.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary pulse" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-2">
+      <a href="#"><i class="fab fa-facebook fa-lg me-2"></i></a>
+      <a href="#"><i class="fab fa-twitter fa-lg me-2"></i></a>
+      <a href="#"><i class="fab fa-linkedin fa-lg"></i></a>
+    </div>
+  </div>
+</footer>
+
+<!-- Scroll-to-top button -->
+<button id="scrollTopBtn" class="btn btn-warning rounded-circle">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<!-- Extra CSS for positioning -->
+<style>
+  #contactBtn {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    z-index: 1050;
+    width: 50px;
+    height: 50px;
+  }
+  #scrollTopBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1050;
+    width: 50px;
+    height: 50px;
+    display: none; /* hidden until scroll */
+  }
+</style>
+
+<!-- Scroll to top JS -->
+<script>
+
+const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
+const booksContainer = document.getElementById("booksContainer");
+
+let debounceTimer;
+
+// 🔍 Live search (home page par hi results show karega)
+searchInput.addEventListener("input", function() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+        const query = searchInput.value.trim();
+        if (!query) {
+            booksContainer.innerHTML = "";
+            return;
+        }
+
+        fetch(`/books/search_api/?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+            booksContainer.innerHTML = "";
+            if (data.results.length === 0) {
+                booksContainer.innerHTML = `<div class="col"><div class="alert alert-warning text-center">No results found</div></div>`;
+            } else {
+                data.results.forEach(book => {
+                    booksContainer.innerHTML += `
+                    <div class="col">
+                        <div class="card book-card h-100">
+                            ${book.image ? `<img src="${book.image}" class="card-img-top book-img">` : `<div class="bg-light d-flex align-items-center justify-content-center book-img">No Image</div>`}
+                            <div class="card-body p-2">
+                                <h6 class="fw-bold">${book.title}</h6>
+                                <p class="text-muted small mb-1">By ${book.author}</p>
+                                <p class="book-price">₹${book.price}</p>
+                                <p class="text-muted small">${book.description.substring(0,80)}...</p>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            }
+        });
+    }, 300);
+});
+
+// 🚀 Redirect function (book_list page par bhejega)
+function redirectToSearch() {
+    const query = searchInput.value.trim();
+    if (query) {
+        window.location.href = `/book_list/?q=${encodeURIComponent(query)}#books-section`;
+    } else {
+        window.location.href = `/book_list/#books-section`;
+    }
+}
+
+// Enter key dabane par redirect
+searchInput.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        redirectToSearch();
+    }
+});
+
+// Button click par redirect
+if (searchBtn) {
+    searchBtn.addEventListener("click", redirectToSearch);
+}
+
+
+
+
+
+
+  const scrollBtn = document.getElementById("scrollTopBtn");
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 200) {
+      scrollBtn.style.display = "block";
+    } else {
+      scrollBtn.style.display = "none";
+    }
+  });
+  scrollBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+</script>
+
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

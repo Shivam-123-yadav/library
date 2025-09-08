@@ -37,6 +37,8 @@ urlpatterns = [
     path('order/<int:order_id>/pdf/', views.order_pdf_view, name='order_pdf'),
     path('change-password/', views.change_password_view, name='change_password'),
      path('api/books-by-genre/', views.api_books_by_genre, name='api_books_by_genre'),  # ✅ important
+     path("authors/<int:author_id>/books/", views.books_by_author, name="books_by_author"),
+    #  path("test-pdf/", views.test_pdf, name="test_pdf"),
 
     # Books
     path("book_list/", views.book_list, name="book_list"),
