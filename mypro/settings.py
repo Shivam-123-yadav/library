@@ -69,8 +69,9 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    ".ngrok-free.app",
+    "library-3o58.onrender.com",  # Render domain
 ]
+
 
 SITE_URL = "https://0d3695324d80.ngrok-free.app"
 MEDIA_URL = "/media/"
