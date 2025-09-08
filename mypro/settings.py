@@ -23,10 +23,17 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+# Static files (CSS, JS, Images)
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')   # for collectstatic on server
 
-SITE_URL = "https://0d3695324d80.ngrok-free.app"  # apna current ngrok URL
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # optional: your app-level static folder
+]
+
+# Media files (uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # =========================
 # WhatsApp Cloud API Config
