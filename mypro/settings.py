@@ -96,7 +96,8 @@ DEBUG = True
 #     "127.0.0.1",
 #     ".ngrok-free.app",
 # ]
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "library-3o58.onrender.com"]
+ALLOWED_HOSTS = ["library-1-u3wy.onrender.com", "localhost", "127.0.0.1"]
+
 
 
 SITE_URL = "https://0d3695324d80.ngrok-free.app"
