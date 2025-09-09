@@ -18,6 +18,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from weasyprint import HTML
+from googleapiclient.discovery import build
 
 from .models import Author, Book, Order, Testimonial
 from .forms import AuthorForm, BookForm, SignupForm, LoginForm, BuyNowForm
@@ -686,11 +687,11 @@ def generate_and_save_pdf(order):
 #                         as_attachment=True,
 #                         filename="order_53.pdf")
 
-from utils.google_auth import get_google_credentials
+
+from mypro.utils.google_auth import get_google_credentials
 
 credentials = get_google_credentials()
 
 # Example: Google Sheets client
 from googleapiclient.discovery import build
 service = build("sheets", "v4", credentials=credentials)
-
