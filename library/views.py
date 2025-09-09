@@ -25,6 +25,8 @@ from .utils import send_whatsapp
 # views.py
 from django.db.models import Count  # add this at the top
 
+# from .utils import send_whatsapp, send_order_email, save_to_google_sheet
+from .utils import save_to_google_sheet, send_email, send_whatsapp
 
 
 # --------- Helper ----------
@@ -433,6 +435,9 @@ def buy_now(request, pk):
             order = form.save(commit=False)
             order.book = book
             order.save()
+
+            # # Save to Google Sheet
+            # save_to_google_sheet(order)
 
             # PDF bytes
             pdf_bytes = _make_order_pdf(order)

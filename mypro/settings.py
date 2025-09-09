@@ -50,13 +50,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')   # for collectstatic on ser
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),  # optional: your app-level static folder
 ]
-<<<<<<< HEAD
-
-# Media files (uploads)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-=======
->>>>>>> ecbc71c (Apne changes ka short message likho)
 
 # Media files (uploads)
 MEDIA_URL = '/media/'
@@ -92,21 +85,12 @@ SECRET_KEY = 'django-insecure-&$32zp$z8sbj#t%cxopoiunbztirx97xw@j-13)xdipxi8tz%d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-<<<<<<< HEAD
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "library-3o58.onrender.com",  # Render domain
-]
-=======
 # ALLOWED_HOSTS = [
 #     "localhost",
 #     "127.0.0.1",
 #     ".ngrok-free.app",
 # ]
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "library-3o58.onrender.com"]
-
->>>>>>> ecbc71c (Apne changes ka short message likho)
 
 
 SITE_URL = "https://0d3695324d80.ngrok-free.app"
@@ -198,28 +182,12 @@ WSGI_APPLICATION = 'mypro.wsgi.application'
 
 DATABASES = {
     "default": {
-<<<<<<< HEAD
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME"),
-        "USER": os.environ.get("DB_USER"),
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST"),
-        "PORT": os.environ.get("DB_PORT", "5432"),
-        "CONN_MAX_AGE": 60,
-        "OPTIONS": {"sslmode": "require"},
-=======
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
->>>>>>> ecbc71c (Apne changes ka short message likho)
     }
 }
 
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> ecbc71c (Apne changes ka short message likho)
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 

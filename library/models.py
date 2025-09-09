@@ -1,6 +1,15 @@
 # library/models.py
 from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+from django.db.models.signals import post_save   # ✅ post_save ke liye
+from django.dispatch import receiver             # ✅ receiver ke liye
+from .utils.google_sheet import save_to_google_sheet
+
+from .utils.send_whatsapp import send_whatsapp
+from .utils.send_email import send_order_email
+
+
 
 class Author(models.Model):
     name = models.CharField(max_length=100)
@@ -26,7 +35,7 @@ class Book(models.Model):
 # ✅ NEW
 class Order(models.Model):
     STATUS_CHOICES = (
-        ('pending', 'Pending'),
+        # ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
         ('cancelled', 'Cancelled'),
     )
@@ -40,7 +49,28 @@ class Order(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
 
+# ✅ Signal: jab new Order create hoga to Google Sheet me add ho
+# Signal to send data to Google Sheet, WhatsApp, and Email after order is created
+@receiver(post_save, sender=Order)
+def order_post_save(sender, instance, created, **kwargs):
+    if created:
+        try:
+            save_to_google_sheet(instance)
+            print("✅ Order added to Google Sheet")
+        except Exception as e:
+            print("⚠️ Google Sheet Error:", e)
 
+        try:
+            send_whatsapp(instance)
+            print("✅ WhatsApp message sent")
+        except Exception as e:
+            print("⚠️ WhatsApp Error:", e)
+
+        try:
+            send_order_email(instance)
+            print("✅ Email sent")
+        except Exception as e:
+            print("⚠️ Email Error:", e)
 class Testimonial(models.Model):
     user_name = models.CharField(max_length=100)
     content = models.TextField()
