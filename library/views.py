@@ -686,4 +686,11 @@ def generate_and_save_pdf(order):
 #                         as_attachment=True,
 #                         filename="order_53.pdf")
 
+from utils.google_auth import get_google_credentials
+
+credentials = get_google_credentials()
+
+# Example: Google Sheets client
+from googleapiclient.discovery import build
+service = build("sheets", "v4", credentials=credentials)
 
