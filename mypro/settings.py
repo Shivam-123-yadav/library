@@ -70,6 +70,11 @@ TWILIO_WHATSAPP_FROM = os.getenv("TWILIO_WHATSAPP_FROM")
 
 # WHATSAPP_API_URL = f"https://graph.facebook.com/{GRAPH_API_VERSION}/{WHATSAPP_PHONE_NUMBER_ID}/messages"
 
+import environ
+env = environ.Env()
+environ.Env.read_env()
+
+GOOGLE_CREDENTIALS = env("GOOGLE_CREDENTIALS")
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
