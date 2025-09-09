@@ -4,8 +4,8 @@ New-Item -ItemType File -Name ".gitignore"
 # Add content (Windows PowerShell)
 Add-Content .gitignore "__pycache__/
 *.pyc
-*.sqlite3
 .env
 .vscode/
 .idea/
 venv/"
+.env
