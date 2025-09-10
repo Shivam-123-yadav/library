@@ -106,6 +106,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     color: #fff;
+    width: 100%;
     {% comment %} text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7); {% endcomment %}
 }
 
@@ -269,6 +270,24 @@
 
 }
  
+.counter-icon {
+  font-size: 28px;   /* icon size */
+  margin-bottom: 6px;
+  color: #ffc107;
+  margin-top: 10px;
+}
+
+.counter {
+  font-size: 22px;   /* number size */
+  font-weight: bold;
+}
+
+.counter-text {
+  font-size: 13px;
+  color: #555;
+}
+
+
 
     </style>
 
@@ -412,25 +431,25 @@ setTimeout(function() {
     <main class="container-fluid my-10">
         <!-- Animated Counters -->
 <div class="row text-center mb-5">
-  <div class="col-md-4">
-  <i class="fas fa-book fa-2x text-warning mb-2"></i>
-  <h2 id="booksCounter" class="counter" data-target="0">0</h2>
-  <p>Total Books</p>
+  <div class="col-4">
+    <i class="fas fa-book counter-icon"></i>
+    <h2 id="booksCounter" class="counter" data-target="0">0</h2>
+    <p class="counter-text">Total Books</p>
+  </div>
+
+  <div class="col-4">
+    <i class="fas fa-user-edit counter-icon"></i>
+    <h2 id="authorsCounter" class="counter" data-target="0">0</h2>
+    <p class="counter-text">Total Authors</p>
+  </div>
+
+  <div class="col-4">
+    <i class="fas fa-users counter-icon"></i>
+    <h2 id="usersCounter" class="counter" data-target="0">0</h2>
+    <p class="counter-text">Active Users</p>
+  </div>
 </div>
 
-<div class="col-md-4">
-  <i class="fas fa-user-edit fa-2x text-warning mb-2"></i>
-  <h2 id="authorsCounter" class="counter" data-target="0">0</h2>
-  <p>Total Authors</p>
-</div>
-
-<div class="col-md-4">
-  <i class="fas fa-users fa-2x text-warning mb-2"></i>
-  <h2 id="usersCounter" class="counter" data-target="0">0</h2>
-  <p>Active Users</p>
-</div>
-
-</div>
 
 
 
