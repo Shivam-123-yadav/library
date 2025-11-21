@@ -5,9 +5,9 @@ from django.db import models
 from django.db.models.signals import post_save   # ✅ post_save ke liye
 from django.dispatch import receiver             # ✅ receiver ke liye
 from .utils.google_sheet import save_to_google_sheet
+from .utils import send_whatsapp, send_order_email
 
-from .utils.send_whatsapp import send_whatsapp
-from .utils.send_email import send_order_email
+
 
 
 
