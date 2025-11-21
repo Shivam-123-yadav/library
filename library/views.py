@@ -17,17 +17,15 @@ from io import BytesIO
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
-from weasyprint import HTML
+# from weasyprint import HTML
 from googleapiclient.discovery import build
 
 from .models import Author, Book, Order, Testimonial
 from .forms import AuthorForm, BookForm, SignupForm, LoginForm, BuyNowForm
-from .utils import send_whatsapp
 # views.py
 from django.db.models import Count  # add this at the top
 
-# from .utils import send_whatsapp, send_order_email, save_to_google_sheet
-from .utils import save_to_google_sheet, send_email, send_whatsapp
+from .utils import save_to_google_sheet, send_order_email, send_whatsapp
 
 
 # --------- Helper ----------
@@ -462,7 +460,7 @@ def buy_now(request, pk):
                 [settings.ORDER_NOTIFICATION_EMAIL],
             )
             email_admin.attach(filename, pdf_bytes, "application/pdf")
-            email_admin.send(fail_silently=False)
+            email_admin.send(fail_silently=True)
 
             # --- User email ---
             subject_user = "Your Book Order Confirmation"
@@ -688,10 +686,11 @@ def generate_and_save_pdf(order):
 #                         filename="order_53.pdf")
 
 
-from mypro.utils.google_auth import get_google_credentials
+# from library.utils import get_google_credentials
 
-credentials = get_google_credentials()
 
-# Example: Google Sheets client
-from googleapiclient.discovery import build
-service = build("sheets", "v4", credentials=credentials)
+# credentials = get_google_credentials()
+
+# # Example: Google Sheets client
+# from googleapiclient.discovery import build
+# service = build("sheets", "v4", credentials=credentials)
