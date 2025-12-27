@@ -26,21 +26,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY SETTINGS
 # =======================
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# =======================
+# SECURITY SETTINGS
+# =======================
+
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-&$32zp$z8sbj#t%cxopoiunbztirx97xw@j-13)xdipxi8tz%d')
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
-    "library-3o58.onrender.com",
-    ".ngrok-free.app",
+    ".onrender.com",       # All Render URLs
+    ".ngrok-free.app",     # All ngrok URLs
 ]
 
-# Site URL
-SITE_URL = os.getenv('SITE_URL', "https://library-3o58.onrender.com")
+SITE_URL = os.getenv('SITE_URL', "https://library-1-u3wy.onrender.com")
 
 
 # =======================
