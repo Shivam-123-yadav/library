@@ -118,12 +118,25 @@ USE_I18N = True
 USE_TZ = True
 
 
+
 # =======================
 # STATIC FILES (CSS, JavaScript, Images)
 # =======================
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Static files directories
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+# Whitenoise configuration
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+# Tell whitenoise to serve all files (including images)
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_AUTOREFRESH = True if DEBUG else False
 
 # Only include STATICFILES_DIRS if the directory exists
 if os.path.exists(os.path.join(BASE_DIR, 'static')):
