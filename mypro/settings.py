@@ -10,104 +10,45 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-# import os
-# from pathlib import Path
-
-
-# from dotenv import load_dotenv
-# load_dotenv()
-
-
-# import os
-# from pathlib import Path
-
-# BASE_DIR = Path(__file__).resolve().parent.parent
-
-# MEDIA_URL = "/media/"
-# MEDIA_ROOT = BASE_DIR / "media"
-
-# SITE_URL = "https://0d3695324d80.ngrok-free.app"  # apna current ngrok URL
-
-
-
 import os
 from pathlib import Path
-
 import environ
-
 from dotenv import load_dotenv
+
+# Load environment variables
 load_dotenv()
 
-
-import os
-from pathlib import Path
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Static files (CSS, JS, Images)
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')   # for collectstatic on server
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # optional: your app-level static folder
-]
-
-# Media files (uploads)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-# =========================
-# WhatsApp Cloud API Config
-# =========================
-
-# # Twilio
-TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-TWILIO_WHATSAPP_FROM = os.getenv("TWILIO_WHATSAPP_FROM")
-
-# WHATSAPP_TOKEN = "EAAanMIPpyvQBPcuq6z17f9EgyfgbQctPqc5UU2RonDLZAeQbcsN3mrOKqGbE58kAmvfEvg2smfsxiF9oHt0riGCkIq62xi5ipsiuloiVeZCZCFZAVkOroW6XuxhmchySsjIu3ZAYS6HTsycDmxahzRZAZCaXw0BUrZBMFGq9c4q9OcTd4o6Dzg4ZBC5Ya72LHb1hYXgwFy6rPNM7EhLfRMvnrZAumx77RNJYzVWAYdbPibIPkZD"
-
-# WHATSAPP_PHONE_NUMBER_ID = "701101489762614"  # tumhara test phone number id
-# GRAPH_API_VERSION = "v22.0"
-
-# WHATSAPP_API_URL = f"https://graph.facebook.com/{GRAPH_API_VERSION}/{WHATSAPP_PHONE_NUMBER_ID}/messages"
-
-import environ
+# Initialize django-environ
 env = environ.Env()
 environ.Env.read_env()
-
-GOOGLE_CREDENTIALS = env("GOOGLE_CREDENTIALS")
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
+# =======================
+# SECURITY SETTINGS
+# =======================
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-&$32zp$z8sbj#t%cxopoiunbztirx97xw@j-13)xdipxi8tz%d'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-&$32zp$z8sbj#t%cxopoiunbztirx97xw@j-13)xdipxi8tz%d')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-# ALLOWED_HOSTS = [
-#     "localhost",
-#     "127.0.0.1",
-#     ".ngrok-free.app",
-# ]
-ALLOWED_HOSTS = ["library-1-u3wy.onrender.com", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = [
+    "library-1-u3wy.onrender.com",
+    "localhost",
+    "127.0.0.1",
+    ".ngrok-free.app",
+]
 
-
-
-SITE_URL = "https://0d3695324d80.ngrok-free.app"
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+SITE_URL = os.getenv('SITE_URL', "https://library-1-u3wy.onrender.com")
 
 
-
-
-# Application definition
+# =======================
+# APPLICATION DEFINITION
+# =======================
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -121,29 +62,9 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
 ]
 
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
-CRISPY_TEMPLATE_PACK = "bootstrap5"
-
-# settings.py
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/book_list/'   # login ke baad kidhar bhejna hai
-LOGOUT_REDIRECT_URL = '/login/'      # logout ke baad kidhar bhejna hai
-
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST='smtp.gmail.com'
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER='klickitshivam@gmail.com'
-EMAIL_HOST_PASSWORD='cvfl laws qivl pnmq'
-ORDER_NOTIFICATION_EMAIL = 'klickitshivam@gmail.com'
-# settings.py
-ORDER_NOTIFICATION_EMAIL = os.getenv("ORDER_NOTIFICATION_EMAIL")
-
-
-
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # For serving static files on Render
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -165,7 +86,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',  
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.media',
-                'library.views.recent_books_and_authors',  # 👈 yeh line add karo
+                'library.views.recent_books_and_authors',
             ], 
         },
     },
@@ -174,19 +95,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'mypro.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#        "NAME": os.getenv("DB_NAME"),
-#         "USER": os.getenv("DB_USER"),
-#         "PASSWORD": os.getenv("DB_PASSWORD"),
-#         "HOST": os.getenv("DB_HOST"),
-#         "PORT": os.getenv("DB_PORT"),
-#     }
-# }
+# =======================
+# DATABASE
+# =======================
 
 DATABASES = {
     "default": {
@@ -195,9 +106,22 @@ DATABASES = {
     }
 }
 
+# Uncomment below for MySQL configuration
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         "NAME": os.getenv("DB_NAME"),
+#         "USER": os.getenv("DB_USER"),
+#         "PASSWORD": os.getenv("DB_PASSWORD"),
+#         "HOST": os.getenv("DB_HOST"),
+#         "PORT": os.getenv("DB_PORT"),
+#     }
+# }
 
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+
+# =======================
+# PASSWORD VALIDATION
+# =======================
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -215,55 +139,143 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# # Internationalization
-# # https://docs.djangoproject.com/en/5.2/topics/i18n/
-
-# LANGUAGE_CODE = 'en-us'
-
-# TIME_ZONE = 'UTC'
-
-# USE_I18N = True
-
-# USE_TZ = True
-
-
-# # Static files (CSS, JavaScript, Images)
-# # https://docs.djangoproject.com/en/5.2/howto/static-files/
-# SITE_URL = "https://0d3695324d80.ngrok-free.app"
-# STATIC_URL = 'static/'
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-
-# # Default primary key field type
-# # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
-# DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
+# =======================
+# INTERNATIONALIZATION
+# =======================
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-SITE_URL = "https://0d3695324d80.ngrok-free.app"
-STATIC_URL = 'static/'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# =======================
+# STATIC FILES (CSS, JavaScript, Images)
+# =======================
+
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+# Only include STATICFILES_DIRS if the directory exists
+if os.path.exists(os.path.join(BASE_DIR, 'static')):
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'static'),
+    ]
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+# Whitenoise configuration for serving static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
+# =======================
+# MEDIA FILES (User Uploads)
+# =======================
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+# =======================
+# EMAIL CONFIGURATION
+# =======================
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'klickitshivam@gmail.com')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'cvfl laws qivl pnmq')
+DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER', 'klickitshivam@gmail.com')
+ORDER_NOTIFICATION_EMAIL = os.getenv('ORDER_NOTIFICATION_EMAIL', 'klickitshivam@gmail.com')
+
+# CRITICAL: Email timeout to prevent worker hangs
+EMAIL_TIMEOUT = 10  # 10 seconds timeout
+
+# Uncomment below to disable email sending (for testing)
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+# =======================
+# TWILIO WHATSAPP CONFIG
+# =======================
+
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TWILIO_WHATSAPP_FROM = os.getenv("TWILIO_WHATSAPP_FROM")
+
+
+# =======================
+# GOOGLE CREDENTIALS
+# =======================
+
+GOOGLE_CREDENTIALS = os.getenv("GOOGLE_CREDENTIALS")
+
+# Write Google credentials to file if present in environment
+if GOOGLE_CREDENTIALS:
+    creds_path = BASE_DIR / 'library' / 'utils' / 'credentials.json'
+    creds_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    if not creds_path.exists():
+        with open(creds_path, 'w') as f:
+            f.write(GOOGLE_CREDENTIALS)
+
+
+# =======================
+# CRISPY FORMS
+# =======================
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+
+# =======================
+# AUTHENTICATION
+# =======================
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/book_list/'
+LOGOUT_REDIRECT_URL = '/login/'
+
+
+# =======================
+# LOGGING CONFIGURATION
+# =======================
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+        'library': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
+
+# =======================
+# DEFAULT PRIMARY KEY FIELD TYPE
+# =======================
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
