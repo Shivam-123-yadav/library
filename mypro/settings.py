@@ -34,18 +34,6 @@ ALLOWED_HOSTS = [
 
 SITE_URL = os.getenv('SITE_URL', "https://library-1-u3wy.onrender.com")
 
-# Security settings for production
-if not DEBUG:
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_FRAME_OPTIONS = 'DENY'
-    SECURE_HSTS_SECONDS = 31536000  # 1 year
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-
 
 # =======================
 # APPLICATION DEFINITION
@@ -61,7 +49,6 @@ INSTALLED_APPS = [
     'library',
     'crispy_forms', 
     'crispy_bootstrap5',
-    'django.contrib.humanize',  # For human readable numbers
 ]
 
 MIDDLEWARE = [
@@ -108,15 +95,6 @@ DATABASES = {
     }
 }
 
-# Database configuration for Render (if using PostgreSQL)
-if os.getenv('RENDER'):
-    import dj_database_url
-    DATABASES['default'] = dj_database_url.config(
-        default=os.getenv('DATABASE_URL'),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
-
 
 # =======================
 # PASSWORD VALIDATION
@@ -140,6 +118,7 @@ USE_I18N = True
 USE_TZ = True
 
 
+
 # =======================
 # STATIC FILES (CSS, JavaScript, Images)
 # =======================
@@ -152,34 +131,21 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-# Ensure static directory exists
-if not os.path.exists(os.path.join(BASE_DIR, 'static')):
-    os.makedirs(os.path.join(BASE_DIR, 'static'), exist_ok=True)
-
-# Create subdirectories in static folder
-static_subdirs = ['css', 'js', 'images', 'fonts']
-for subdir in static_subdirs:
-    dir_path = os.path.join(BASE_DIR, 'static', subdir)
-    if not os.path.exists(dir_path):
-        os.makedirs(dir_path, exist_ok=True)
-
 # Whitenoise configuration
-STORAGES = {
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
-# Whitenoise settings
+# Tell whitenoise to serve all files (including images)
 WHITENOISE_USE_FINDERS = True
-WHITENOISE_AUTOREFRESH = DEBUG  # Auto-refresh only in debug mode
-WHITENOISE_MANIFEST_STRICT = False  # Don't raise errors for missing files
+WHITENOISE_AUTOREFRESH = True if DEBUG else False
 
-# Static files finders
-STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-]
+# Only include STATICFILES_DIRS if the directory exists
+if os.path.exists(os.path.join(BASE_DIR, 'static')):
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'static'),
+    ]
+
+# Whitenoise - don't use manifest storage to avoid errors with missing files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 
 # =======================
@@ -188,17 +154,6 @@ STATICFILES_FINDERS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# Ensure media directory exists
-if not os.path.exists(MEDIA_ROOT):
-    os.makedirs(MEDIA_ROOT, exist_ok=True)
-
-# Create subdirectories in media folder
-media_subdirs = ['logo', 'images', 'books', 'authors', 'uploads']
-for subdir in media_subdirs:
-    dir_path = os.path.join(MEDIA_ROOT, subdir)
-    if not os.path.exists(dir_path):
-        os.makedirs(dir_path, exist_ok=True)
 
 
 # =======================
@@ -265,11 +220,6 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/book_list/'
 LOGOUT_REDIRECT_URL = '/login/'
 
-# Session settings
-SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
-SESSION_SAVE_EVERY_REQUEST = True
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-
 
 # =======================
 # LOGGING CONFIGURATION
@@ -283,43 +233,25 @@ LOGGING = {
             'format': '{levelname} {asctime} {module} {message}',
             'style': '{',
         },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
-    },
-    'filters': {
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
     },
     'handlers': {
         'console': {
-            'level': 'INFO',
-            'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
-        'file': {
-            'level': 'WARNING',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'debug.log'),
             'formatter': 'verbose',
         },
     },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'django.request': {
-            'handlers': ['console', 'file'],
-            'level': 'ERROR',
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
             'propagate': False,
         },
         'library': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
@@ -332,149 +264,3 @@ LOGGING = {
 # =======================
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-# =======================
-# ADDITIONAL SETTINGS
-# =======================
-
-# File upload settings
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
-FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
-FILE_UPLOAD_PERMISSIONS = 0o644
-
-# Add mimetypes for better file serving
-import mimetypes
-mimetypes.add_type("image/svg+xml", ".svg", True)
-mimetypes.add_type("image/webp", ".webp", True)
-
-# Auto-create missing files on startup
-def create_missing_files():
-    """Create essential static and media files if they don't exist."""
-    
-    # Create basic CSS file if missing
-    css_file = os.path.join(BASE_DIR, 'static', 'css', 'style.css')
-    if not os.path.exists(css_file):
-        css_content = """/* Basic CSS for Library Management System */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 0;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.navbar {
-    background-color: #343a40;
-    color: white;
-    padding: 15px 0;
-}
-
-.navbar a {
-    color: white;
-    text-decoration: none;
-    margin: 0 15px;
-}
-
-.card {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
-.btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-}
-
-.btn-primary {
-    background-color: #007bff;
-    color: white;
-}
-
-.btn-success {
-    background-color: #28a745;
-    color: white;
-}
-
-.btn-danger {
-    background-color: #dc3545;
-    color: white;
-}
-
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-}
-
-.table th, .table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-.table th {
-    background-color: #f8f9fa;
-    font-weight: bold;
-}
-
-.alert {
-    padding: 15px;
-    border-radius: 4px;
-    margin: 20px 0;
-}
-
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.alert-danger {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-.alert-warning {
-    background-color: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeaa7;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    .container {
-        padding: 10px;
-    }
-    
-    .navbar {
-        padding: 10px 0;
-    }
-    
-    .table {
-        display: block;
-        overflow-x: auto;
-    }
-}"""
-        
-        os.makedirs(os.path.dirname(css_file), exist_ok=True)
-        with open(css_file, 'w') as f:
-            f.write(css_content)
-        print(f"Created missing CSS file: {css_file}")
-
-# Run file creation on startup
-if DEBUG:
-    create_missing_files()
